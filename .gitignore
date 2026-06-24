@@ -1,0 +1,12 @@
+bin/
+obj/
+*.user
+.vs/
+.idea/
+.cache/
+
+node_modules/
+.next/
+dist/
+out/
+frontend/.env.local

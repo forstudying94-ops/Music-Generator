@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      context: ./backend
+    ports:
+      - "5182:8080"
+    volumes:
+      - audio-cache:/app/.cache
+
+  web:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  audio-cache:

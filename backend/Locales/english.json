@@ -1,0 +1,61 @@
+{
+  "code": "en_US",
+  "displayName": "English (USA)",
+  "fakerLocale": "en_US",
+  "isPrimary": true,
+  "singleLabel": "Single",
+  "genres": [
+    "Indie Rock", "Synth Pop", "Lo-Fi Hip Hop", "Dream Pop", "Garage Punk",
+    "Soul", "Funk", "Ambient", "Folk", "Bluegrass", "Hard Rock", "Shoegaze",
+    "Trip Hop", "Country", "Electro Swing", "Post Rock", "Jazz Fusion",
+    "Bedroom Pop", "Surf Rock", "Math Rock"
+  ],
+  "titlePatterns": [
+    "{adjective} {noun}",
+    "{noun} of {noun}",
+    "The {noun}",
+    "{adjective} {adjective} {noun}",
+    "{noun} in the {noun}",
+    "{verb} the {noun}",
+    "{adjective} {noun} {number}"
+  ],
+  "albumPatterns": [
+    "{adjective} {noun}",
+    "{noun} & {noun}",
+    "Songs from the {noun}",
+    "{adjective} Tapes"
+  ],
+  "bandPatterns": [
+    "The {bandWord} {bandWord}",
+    "{bandWord} {bandWord}",
+    "{bandWord} and the {bandWord}s",
+    "The {bandWord}s"
+  ],
+  "adjectives": [
+    "Velvet", "Electric", "Silent", "Golden", "Broken", "Endless", "Midnight",
+    "Crimson", "Hollow", "Restless", "Lonely", "Frozen", "Burning", "Distant",
+    "Wild", "Faded", "Neon", "Savage", "Gentle", "Hidden"
+  ],
+  "nouns": [
+    "Carrot", "Mirror", "Highway", "Ocean", "Ghost", "Engine", "Garden",
+    "Thunder", "Castle", "Rivers", "Echoes", "Stranger", "Machine", "Harbor",
+    "Diamond", "Shadow", "Paper", "Wolves", "Comet", "Lantern"
+  ],
+  "verbs": [
+    "Chasing", "Burning", "Leaving", "Breaking", "Dancing", "Falling", "Calling"
+  ],
+  "bandWords": [
+    "Black", "Iron", "Crystal", "Paper", "Velvet", "Neon", "Lunar", "Static",
+    "Wolf", "Tiger", "River", "Echo", "Riot", "Sundown", "Cosmic", "Glass"
+  ],
+  "reviews": [
+    "Solid listen, grows on you.",
+    "Catchy chorus.",
+    "A bit uneven but memorable.",
+    "Perfect for late night listening.",
+    "One of their stronger tracks.",
+    "Worth adding to your playlist.",
+    "Unexpected but it works.",
+    "The rhythm section really delivers."
+  ]
+}

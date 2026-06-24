@@ -1,0 +1,29 @@
+{
+  "code": "de_DE",
+  "displayName": "Deutsch (Deutschland)",
+  "fakerLocale": "de",
+  "singleLabel": "Single",
+  "genres": [
+    "Indie Rock", "Synth Pop", "Lo-Fi Hip Hop", "Schlager", "Punk",
+    "Soul", "Funk", "Ambient", "Folk", "Volksmusik", "Hard Rock", "Shoegaze",
+    "Trip Hop", "Country", "Electro Swing", "Post Rock", "Jazz Fusion",
+    "Deutschpop", "Surf Rock", "Krautrock"
+  ],
+  "titlePatterns": [],
+  "albumPatterns": [],
+  "bandPatterns": [],
+  "adjectives": [],
+  "nouns": [],
+  "verbs": [],
+  "bandWords": [],
+  "reviews": [
+    "Guter Song, wird mit der Zeit besser.",
+    "Eingängiger Refrain.",
+    "Etwas ungleich, aber einprägsam.",
+    "Perfekt für späte Stunden.",
+    "Einer ihrer stärkeren Titel.",
+    "Lohnt sich für die Playlist.",
+    "Unerwartet, aber stimmig.",
+    "Die Rhythmusgruppe überzeugt."
+  ]
+}
