@@ -49,13 +49,13 @@ public static class Compose
 
     private static MusicKey SelectKey(GenreProfile profile, int songSeed)
     {
-        var rng = new Random(Seed.Mix(songSeed, "key"));
+        var rng = new Random(SeedHash.Mix(songSeed, "key"));
         return new MusicKey(rng.Next(12), profile.PossibleScales[rng.Next(profile.PossibleScales.Count)]);
     }
 
     private static int SelectTempo(GenreProfile profile, int songSeed)
     {
-        var rng = new Random(Seed.Mix(songSeed, "tempo"));
+        var rng = new Random(SeedHash.Mix(songSeed, "tempo"));
         return rng.Next(profile.TempoRange.Min, profile.TempoRange.Max + 1);
     }
 
@@ -63,14 +63,15 @@ public static class Compose
     {
         var secondsPerBar = (60.0 / tempo) * BeatsPerBar;
         var rawBars = targetDurationSeconds / secondsPerBar;
-        return Math.Max((int)Math.Ceiling(rawBars / 4.0) * 4, 4);
+        var bars = Math.Max((int)Math.Ceiling(rawBars), 2);
+        return bars + (bars % 2);
     }
 
     private static IReadOnlyList<Chord> BuildProgression(GenreProfile profile, MusicKey key, int songSeed, int totalBars)
     {
-        var pickRng = new Random(Seed.Mix(songSeed, "progression-pick"));
+        var pickRng = new Random(SeedHash.Mix(songSeed, "progression-pick"));
         var pattern = profile.ProgressionPool[pickRng.Next(profile.ProgressionPool.Count)];
-        var seventhRng = new Random(Seed.Mix(songSeed, "progression-sevenths"));
+        var seventhRng = new Random(SeedHash.Mix(songSeed, "progression-sevenths"));
 
         var chords = new List<Chord>(totalBars);
         for (var bar = 0; bar < totalBars; bar++)
@@ -101,10 +102,10 @@ public static class Compose
         for (var bar = 0; bar < progression.Count; bar++)
         {
             var chord = progression[bar];
-            var rhythmRng = new Random(Seed.Mix(songSeed, "melody-rhythm", bar));
-            var pitchRng = new Random(Seed.Mix(songSeed, "melody-pitch", bar));
-            var velRng = new Random(Seed.Mix(songSeed, "melody-velocity", bar));
-            var restRng = new Random(Seed.Mix(songSeed, "melody-rest", bar));
+            var rhythmRng = new Random(SeedHash.Mix(songSeed, "melody-rhythm", bar));
+            var pitchRng = new Random(SeedHash.Mix(songSeed, "melody-pitch", bar));
+            var velRng = new Random(SeedHash.Mix(songSeed, "melody-velocity", bar));
+            var restRng = new Random(SeedHash.Mix(songSeed, "melody-rest", bar));
 
             var pattern = MelodyRhythms[rhythmRng.Next(MelodyRhythms.Length)];
             var cursor = 0.0;
@@ -140,7 +141,7 @@ public static class Compose
     {
         var notes = new List<NoteEvent>();
         var anchor = (profile.MelodyOctave - 1 + 1) * 12; // tonic-ish register, one octave below melody
-        var velRng = new Random(Seed.Mix(songSeed, "chord-velocity"));
+        var velRng = new Random(SeedHash.Mix(songSeed, "chord-velocity"));
 
         for (var bar = 0; bar < progression.Count; bar++)
         {
@@ -164,10 +165,10 @@ public static class Compose
         for (var bar = 0; bar < progression.Count; bar++)
         {
             var chord = progression[bar];
-            var rhythmRng = new Random(Seed.Mix(songSeed, "bass-rhythm", bar));
-            var pitchRng = new Random(Seed.Mix(songSeed, "bass-pitch", bar));
-            var velRng = new Random(Seed.Mix(songSeed, "bass-velocity", bar));
-            var syncRng = new Random(Seed.Mix(songSeed, "bass-sync", bar));
+            var rhythmRng = new Random(SeedHash.Mix(songSeed, "bass-rhythm", bar));
+            var pitchRng = new Random(SeedHash.Mix(songSeed, "bass-pitch", bar));
+            var velRng = new Random(SeedHash.Mix(songSeed, "bass-velocity", bar));
+            var syncRng = new Random(SeedHash.Mix(songSeed, "bass-sync", bar));
 
             var pattern = BassRhythms[rhythmRng.Next(BassRhythms.Length)];
             var cursor = 0.0;
@@ -195,7 +196,7 @@ public static class Compose
 
     private static IReadOnlyList<DrumHitEvent> BuildDrums(GenreProfile profile, int songSeed, int totalBars)
     {
-        var templateRng = new Random(Seed.Mix(songSeed, "drum-template"));
+        var templateRng = new Random(SeedHash.Mix(songSeed, "drum-template"));
         var template = profile.DrumPatternPool[templateRng.Next(profile.DrumPatternPool.Count)];
 
         var hits = new List<DrumHitEvent>();
@@ -205,8 +206,8 @@ public static class Compose
         {
             for (var bar = 0; bar < totalBars; bar++)
             {
-                var voiceRng = new Random(Seed.Mix(songSeed, "drum-voice", voice.GmKey, bar));
-                var velRng = new Random(Seed.Mix(songSeed, "drum-velocity", voice.GmKey, bar));
+                var voiceRng = new Random(SeedHash.Mix(songSeed, "drum-voice", voice.GmKey, bar));
+                var velRng = new Random(SeedHash.Mix(songSeed, "drum-velocity", voice.GmKey, bar));
 
                 for (var step = 0; step < StepsPerBar; step++)
                 {

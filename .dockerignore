@@ -1,0 +1,9 @@
+**/node_modules
+**/bin
+**/obj
+**/.git
+**/.idea
+**/.cache
+frontend/dist
+backend/.cache
+**/.DS_Store

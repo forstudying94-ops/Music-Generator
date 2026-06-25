@@ -1,21 +1,20 @@
 namespace MusicStore;
 
-public static class Seed
+public static class SeedHash
 {
-    private const long MulA = 6364136223846793005L;
-    private const long MulB = 1442695040888963407L;
-    private const long LikesSalt = unchecked((long)0x9E3779B97F4A7C15UL);
+    private const long UserSeedMultiplier = 6364136223846793005L;
+    private const long TrackIndexMultiplier = 1442695040888963407L;
 
     public static int SongSeed(long userSeed, long globalIndex)
     {
-        long mixed = unchecked(userSeed * MulA + globalIndex * MulB);
+        long mixed = unchecked(userSeed * UserSeedMultiplier + globalIndex * TrackIndexMultiplier);
         return Fold(mixed);
     }
 
-    public static int LikesSeed(long userSeed, long globalIndex)
+    public static int SongSeed(long userSeed, long globalIndex, string localeCode)
     {
-        long mixed = unchecked((userSeed ^ LikesSalt) * MulA + globalIndex * MulB);
-        return Fold(mixed);
+        var baseSeed = SongSeed(userSeed, globalIndex);
+        return Mix(baseSeed, localeCode);
     }
 
     public static int Mix(int seed, string tag, int a = 0, int b = 0)

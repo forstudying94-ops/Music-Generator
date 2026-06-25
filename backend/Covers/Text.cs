@@ -47,6 +47,25 @@ internal static class CoverText
         foreach (var name in candidates)
             if (SystemFonts.TryGet(name, out var family))
                 return family.CreateFont(size, style);
-        return SystemFonts.Families.First().CreateFont(size, style);
+
+        foreach (var path in FontFileCandidates())
+        {
+            if (!File.Exists(path)) continue;
+
+            var collection = new FontCollection();
+            return collection.Add(path).CreateFont(size, style);
+        }
+
+        if (SystemFonts.Families.Any())
+            return SystemFonts.Families.First().CreateFont(size, style);
+
+        throw new InvalidOperationException("No fonts available for cover rendering.");
+    }
+
+    private static IEnumerable<string> FontFileCandidates()
+    {
+        yield return Path.Combine(AppContext.BaseDirectory, "Fonts", "DejaVuSans.ttf");
+        yield return "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+        yield return "/usr/share/fonts/TTF/DejaVuSans.ttf";
     }
 }

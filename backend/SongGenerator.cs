@@ -4,12 +4,12 @@ using MusicStore.Covers;
 
 namespace MusicStore;
 
-public class SongGen
+public class SongGenerator
 {
     private readonly LocaleStore _locales;
     private static readonly Regex Token = new(@"\{(\w+)\}", RegexOptions.Compiled);
 
-    public SongGen(LocaleStore locales) => _locales = locales;
+    public SongGenerator(LocaleStore locales) => _locales = locales;
 
     public SongPage Generate(string? localeCode, long userSeed, double avgLikes, int page, int pageSize)
     {
@@ -29,10 +29,10 @@ public class SongGen
     {
         var locale = _locales.Resolve(localeCode);
         var primary = _locales.Primary;
-        var songSeed = Seed.SongSeed(userSeed, globalIndex);
+        var songSeed = SeedHash.SongSeed(userSeed, globalIndex, locale.Code);
 
         var primaryFaker = MakeFaker(primary, songSeed);
-        var localeFaker = MakeFaker(locale, Seed.Mix(songSeed, locale.Code));
+        var localeFaker = MakeFaker(locale, SeedHash.Mix(songSeed, locale.Code));
 
         var title = Fill(primaryFaker.Random.ListItem(primary.TitlePatterns), primaryFaker, primary);
 
@@ -44,16 +44,17 @@ public class SongGen
             Album = BuildAlbum(primaryFaker, primary),
             Genre = localeFaker.Random.ListItem(locale.Genres),
             Review = localeFaker.Random.ListItem(locale.Reviews),
-            Likes = RollLikes(userSeed, globalIndex, Math.Clamp(avgLikes, 0, 10)),
-            CoverUrl = $"/api/cover?seed={userSeed}&index={globalIndex}",
-            PreviewUrl = $"/api/audio?seed={userSeed}&index={globalIndex}"
+            Likes = RollLikes(songSeed, Math.Clamp(avgLikes, 0, 10)),
+            CoverUrl = $"/api/cover?seed={userSeed}&index={globalIndex}&lang={Uri.EscapeDataString(locale.Code)}",
+            PreviewUrl = $"/api/audio?seed={userSeed}&index={globalIndex}&lang={Uri.EscapeDataString(locale.Code)}&duration=8"
         };
     }
 
-    public byte[] RenderCover(long userSeed, long globalIndex)
+    public byte[] RenderCover(string? localeCode, long userSeed, long globalIndex)
     {
-        var song = GenerateOne(null, userSeed, globalIndex, 0);
-        var songSeed = Seed.SongSeed(userSeed, globalIndex);
+        var locale = _locales.Resolve(localeCode);
+        var song = GenerateOne(locale.Code, userSeed, globalIndex, 0);
+        var songSeed = SeedHash.SongSeed(userSeed, globalIndex, locale.Code);
         return CoverRender.Make(songSeed, song.Title, song.Album, song.Artist);
     }
 
@@ -87,11 +88,11 @@ public class SongGen
             _ => match.Value
         });
 
-    private static int RollLikes(long userSeed, long globalIndex, double avgLikes)
+    private static int RollLikes(int songSeed, double avgLikes)
     {
         if (avgLikes <= 0) return 0;
 
-        var likesRng = new Randomizer(Seed.LikesSeed(userSeed, globalIndex));
+        var likesRng = new Randomizer(SeedHash.Mix(songSeed, "likes"));
         var baseLikes = (int)Math.Floor(avgLikes);
         var chanceOfExtra = avgLikes - baseLikes;
         var extra = likesRng.Double() < chanceOfExtra ? 1 : 0;

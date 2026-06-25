@@ -19,7 +19,7 @@ public static class Genres
     public static MusicGenre Pick(int songSeed)
     {
         var values = Enum.GetValues<MusicGenre>();
-        var rng = new Random(Seed.Mix(songSeed, "genre-pick"));
+        var rng = new Random(SeedHash.Mix(songSeed, "genre-pick"));
         return values[rng.Next(values.Length)];
     }
 

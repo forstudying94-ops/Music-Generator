@@ -7,7 +7,7 @@ public static class CoverRender
 {
     public static byte[] Make(int songSeed, string title, string album, string artist)
     {
-        var random = new Random(Seed.Mix(songSeed, "cover"));
+        var random = new Random(SeedHash.Mix(songSeed, "cover"));
 
         using var image = new Image<Rgba32>(CoverCanvas.Size, CoverCanvas.Size);
 

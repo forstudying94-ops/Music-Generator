@@ -7,39 +7,70 @@ type Props = {
   compact?: boolean;
 };
 
+function waitForCanPlay(audio: HTMLAudioElement) {
+  return new Promise<void>((resolve, reject) => {
+    if (audio.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
+      resolve();
+      return;
+    }
+
+    const onReady = () => {
+      cleanup();
+      resolve();
+    };
+    const onError = () => {
+      cleanup();
+      reject(new Error("audio load failed"));
+    };
+    const cleanup = () => {
+      audio.removeEventListener("canplaythrough", onReady);
+      audio.removeEventListener("error", onError);
+    };
+
+    audio.addEventListener("canplaythrough", onReady);
+    audio.addEventListener("error", onError);
+    audio.load();
+  });
+}
+
 export function PreviewPlayer({ src, compact = false }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    const audio = new Audio(src);
-    audioRef.current = audio;
-
-    const onPlaying = () => {
-      setPlaying(true);
-      setLoading(false);
-    };
-    const onPause = () => setPlaying(false);
-    const onWaiting = () => setLoading(true);
-    const onEnded = () => setPlaying(false);
-
-    audio.addEventListener("playing", onPlaying);
-    audio.addEventListener("pause", onPause);
-    audio.addEventListener("waiting", onWaiting);
-    audio.addEventListener("ended", onEnded);
-
     return () => {
-      audio.pause();
-      audio.removeEventListener("playing", onPlaying);
-      audio.removeEventListener("pause", onPause);
-      audio.removeEventListener("waiting", onWaiting);
-      audio.removeEventListener("ended", onEnded);
+      audioRef.current?.pause();
+      audioRef.current = null;
       if (activePlayer === stop) {
         activePlayer = null;
       }
     };
   }, [src]);
+
+  function getAudio() {
+    const absolute = new URL(src, window.location.origin).href;
+
+    if (audioRef.current?.src === absolute) {
+      return audioRef.current;
+    }
+
+    audioRef.current?.pause();
+    const audio = new Audio(absolute);
+    audio.preload = "none";
+    audioRef.current = audio;
+
+    audio.addEventListener("playing", () => {
+      setPlaying(true);
+      setLoading(false);
+      setError(false);
+    });
+    audio.addEventListener("pause", () => setPlaying(false));
+    audio.addEventListener("ended", () => setPlaying(false));
+
+    return audio;
+  }
 
   function stop() {
     const audio = audioRef.current;
@@ -47,12 +78,12 @@ export function PreviewPlayer({ src, compact = false }: Props) {
       audio.pause();
       audio.currentTime = 0;
     }
+    setPlaying(false);
   }
 
-  function toggle(e: MouseEvent) {
+  async function toggle(e: MouseEvent) {
     e.stopPropagation();
-    const audio = audioRef.current;
-    if (!audio) return;
+    const audio = getAudio();
 
     if (playing) {
       audio.pause();
@@ -65,11 +96,21 @@ export function PreviewPlayer({ src, compact = false }: Props) {
     activePlayer = stop;
 
     setLoading(true);
-    audio.play().catch(() => setLoading(false));
+    setError(false);
+
+    try {
+      await waitForCanPlay(audio);
+      await audio.play();
+    } catch {
+      setLoading(false);
+      setPlaying(false);
+      setError(true);
+    }
   }
 
   let label = "Play";
-  if (loading) label = "Loading";
+  if (error) label = "Retry";
+  else if (loading) label = "Loading…";
   else if (playing) label = "Pause";
 
   return (

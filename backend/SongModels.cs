@@ -31,7 +31,8 @@ public class SongQuery
 
 public class AudioQuery
 {
+    public string? Lang { get; set; }
     public string? Seed { get; set; }
     public long Index { get; set; }
-    public int Duration { get; set; } = 30;
+    public int Duration { get; set; } = 8;
 }
